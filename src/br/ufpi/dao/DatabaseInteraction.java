@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ufpi.exception.DatabaseConnectionException;
 import br.ufpi.model.Register;
 
 public class DatabaseInteraction {
@@ -16,22 +17,33 @@ public class DatabaseInteraction {
 	private List<String> softwares;
 	
 	public DatabaseInteraction(String OCSServerName, String OCSDatabaseName, String OCSUserName, String OCSPassword,
-			String MyServerName, String MyDatabaseName, String MyUserName, String MyPassword, String MyTableName) {
+			String MyServerName, String MyDatabaseName, String MyUserName, String MyPassword) throws DatabaseConnectionException {
 		softwares = new ArrayList<String>();
 		Connection myConnection = getMySQLConnection(MyServerName, MyDatabaseName, MyUserName, MyPassword);
+		
+		
 		try {
 			Statement st = myConnection.createStatement();
-			ResultSet rs = st.executeQuery("select * from " + MyTableName + ";");
+			st.executeQuery("create table if not exists softwares(software varchar(50) not null);");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseConnectionException();
+		}
+		
+		try {
+			Statement st = myConnection.createStatement();
+			ResultSet rs = st.executeQuery("select * from software;");
 			while (rs.next()) {
 				softwares.add(rs.getString(1));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DatabaseConnectionException();
 		}
 		OCSConnection = getMySQLConnection(OCSServerName, OCSDatabaseName, OCSUserName, OCSPassword);
 	}
 	
-	private Connection getMySQLConnection(String serverName, String databaseName, String userName, String password){
+	private Connection getMySQLConnection(String serverName, String databaseName, String userName, String password) throws DatabaseConnectionException{
 		Connection connection = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -44,11 +56,11 @@ public class DatabaseInteraction {
 		} catch (SQLException e) {
 			System.out.println("Não foi possível conectar ao Banco de Dados!");
 			e.printStackTrace();
-			return null;
+			throw new DatabaseConnectionException();
 		}
 	}
 	
-	public List<Register> getRegisters(){
+	public List<Register> getRegisters() throws DatabaseConnectionException{
 		try {
 			Statement st = OCSConnection.createStatement();
 			List<Register> registers = new ArrayList<Register>();
@@ -75,7 +87,7 @@ public class DatabaseInteraction {
 			return registers;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return null;
+			throw new DatabaseConnectionException();
 		}
 	}
 	
