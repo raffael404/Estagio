@@ -14,32 +14,12 @@ import br.ufpi.model.Register;
 public class DatabaseInteraction {
 	
 	private Connection OCSConnection;
+	private Connection myConnection;
 	private List<String> softwares;
 	
 	public DatabaseInteraction(String OCSServerName, String OCSDatabaseName, String OCSUserName, String OCSPassword,
 			String MyServerName, String MyDatabaseName, String MyUserName, String MyPassword) throws DatabaseConnectionException {
-		softwares = new ArrayList<String>();
-		Connection myConnection = getMySQLConnection(MyServerName, MyDatabaseName, MyUserName, MyPassword);
-		
-		
-		try {
-			Statement st = myConnection.createStatement();
-			st.executeQuery("create table if not exists softwares(software varchar(50) not null);");
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseConnectionException();
-		}
-		
-		try {
-			Statement st = myConnection.createStatement();
-			ResultSet rs = st.executeQuery("select * from software;");
-			while (rs.next()) {
-				softwares.add(rs.getString(1));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseConnectionException();
-		}
+		myConnection = getMySQLConnection(MyServerName, MyDatabaseName, MyUserName, MyPassword);
 		OCSConnection = getMySQLConnection(OCSServerName, OCSDatabaseName, OCSUserName, OCSPassword);
 	}
 	
@@ -48,7 +28,6 @@ public class DatabaseInteraction {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://" + serverName + "/" + databaseName, userName, password);
-			System.out.println("alguma coisa");
 			return connection;
 		} catch (ClassNotFoundException e) {
 			System.out.println("Driver não encontrado!");
@@ -56,11 +35,25 @@ public class DatabaseInteraction {
 		} catch (SQLException e) {
 			System.out.println("Não foi possível conectar ao Banco de Dados!");
 			e.printStackTrace();
-			throw new DatabaseConnectionException();
+			throw new DatabaseConnectionException("Erro de conexão com o Banco de dados " + databaseName + "!");
 		}
 	}
 	
 	public List<Register> getRegisters() throws DatabaseConnectionException{
+		
+		try {
+			Statement st = myConnection.createStatement();
+			st.executeUpdate("create table if not exists softwares(software varchar(50) primary key);");
+			softwares = new ArrayList<String>();
+			ResultSet rs = st.executeQuery("select * from softwares;");
+			while (rs.next()) {
+				softwares.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseConnectionException("Erro de conexão com o seu Banco de Dados!");
+		}
+		
 		try {
 			Statement st = OCSConnection.createStatement();
 			List<Register> registers = new ArrayList<Register>();
@@ -87,8 +80,32 @@ public class DatabaseInteraction {
 			return registers;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DatabaseConnectionException();
+			throw new DatabaseConnectionException("Erro de conexão com o Banco de Dados do OCS!");
 		}
+	}
+	
+	public void insertSoftware(String software) throws DatabaseConnectionException{
+		try {
+			Statement st = myConnection.createStatement();
+//			st.executeUpdate("create table if not exists login(server varchar(50), user varchar(50), password varchar(50));");
+//			st.executeQuery("select * from login;");
+			st.executeUpdate("insert into softwares values('" + software + "');");
+			st.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseConnectionException("Software já existe!");
+		}
+	}
+	
+	public void closeConnection() throws DatabaseConnectionException{
+		try {
+			myConnection.close();
+			OCSConnection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseConnectionException("Erro ao fechar a conexão!");
+		}
+		
 	}
 	
 }

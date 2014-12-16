@@ -45,6 +45,7 @@ public class LoginScreen {
 	private JTextField textFieldOCSServer;
 	private JTextField textFieldMyServer;
 	private JLabel lblMyServer;
+	private JCheckBox chckbxRememberLogin;
 
 	/**
 	 * Launch the application.
@@ -170,7 +171,7 @@ public class LoginScreen {
 		lblMyServer.setBounds(10, 34, 71, 20);
 		panelMyDatabase.add(lblMyServer);
 		
-		JCheckBox chckbxRememberLogin = new JCheckBox("Lembrar dados de login");
+		chckbxRememberLogin = new JCheckBox("Lembrar dados de login");
 		chckbxRememberLogin.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		chckbxRememberLogin.setBounds(21, 201, 173, 23);
 		frmLogin.getContentPane().add(chckbxRememberLogin);
@@ -188,13 +189,16 @@ public class LoginScreen {
 				String OCSServer, OCSUser, OCSPassword, MyServer, MyUser, MyPassword;
 				OCSServer = textFieldOCSServer.getText();
 				OCSUser = textFieldOCSUser.getText();
-				OCSPassword = passwordFieldOCSPassword.getPassword().toString();
+				OCSPassword = String.valueOf(passwordFieldOCSPassword.getPassword());
 				MyServer = textFieldMyServer.getText();
 				MyUser = textFieldMyUser.getText();
-				MyPassword = passwordFieldMyPassword.getPassword().toString();
+				MyPassword = String.valueOf(passwordFieldMyPassword.getPassword());
 				
 				try {
 					DatabaseInteraction database = new DatabaseInteraction(OCSServer, "ocsweb", OCSUser, OCSPassword, MyServer, "software_detection", MyUser, MyPassword);
+					if (chckbxRememberLogin.isSelected()){
+						
+					}
 					MainScreen main = new MainScreen(database);
 					main.getFrame().setVisible(true);
 					frmLogin.setVisible(false);
