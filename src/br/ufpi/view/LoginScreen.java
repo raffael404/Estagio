@@ -203,7 +203,7 @@ public class LoginScreen {
 					main.getFrame().setVisible(true);
 					frmLogin.setVisible(false);
 				} catch (DatabaseConnectionException e1) {
-					ErrorScreen error = new ErrorScreen();
+					ErrorScreen error = new ErrorScreen(e1.getMessage());
 					error.getFrame().setVisible(true);
 					e1.printStackTrace();
 				}

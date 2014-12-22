@@ -87,13 +87,49 @@ public class DatabaseInteraction {
 	public void insertSoftware(String software) throws DatabaseConnectionException{
 		try {
 			Statement st = myConnection.createStatement();
-//			st.executeUpdate("create table if not exists login(server varchar(50), user varchar(50), password varchar(50));");
-//			st.executeQuery("select * from login;");
+			st.executeUpdate("create table if not exists softwares(software varchar(50) primary key);");
 			st.executeUpdate("insert into softwares values('" + software + "');");
 			st.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DatabaseConnectionException("Software já existe!");
+		}
+	}
+	
+	public void saveLogin(String OCSServer, String OCSUser, String OCSPassword, String MyServer, String MyUser, String MyPassword) throws DatabaseConnectionException{
+		try {
+			Statement st = myConnection.createStatement();
+			st.executeUpdate("create table if not exists login(server varchar(50), user varchar(50), password varchar(50));");
+			st.executeUpdate("delete * from login;");
+			st.executeUpdate("insert into login values('" + OCSServer + "', '" + OCSUser +"', '" + OCSPassword + "');");
+			st.executeUpdate("insert into login values('" + MyServer + "', '" + MyUser +"', '" + MyPassword + "');");
+			st.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseConnectionException("Erro ao salvar os dados de login!");
+		}
+	}
+	
+	public String[] chargeLogin() throws DatabaseConnectionException{
+		try {
+			Statement st = myConnection.createStatement();
+			st.executeUpdate("create table if not exists login(server varchar(50), user varchar(50), password varchar(50));");
+			ResultSet rs = st.executeQuery("select * from login;");
+			int i = 0;
+			String[] loginData = new String[6];
+			while(rs.next()){
+				loginData[i] = rs.getString(1);
+				i++;
+				loginData[i] = rs.getString(2);
+				i++;
+				loginData[i] = rs.getString(3);
+				i++;
+			}
+			st.close();
+			return loginData;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseConnectionException("Erro ao carregar dados de login!");
 		}
 	}
 	

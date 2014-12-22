@@ -1,62 +1,44 @@
 package br.ufpi.view;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import java.awt.Font;
-
-import javax.swing.JButton;
-
 import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
 public class ErrorScreen {
 
 	private JFrame frmErro;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ErrorScreen window = new ErrorScreen();
-					window.frmErro.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the application.
 	 */
-	public ErrorScreen() {
-		initialize();
+	public ErrorScreen(String message) {
+		initialize(message);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(String message) {
 		frmErro = new JFrame();
 		frmErro.setResizable(false);
 		frmErro.setTitle("Erro");
 		frmErro.setType(Type.POPUP);
-		frmErro.setBounds(100, 100, 255, 105);
+		frmErro.setBounds(100, 100, 400, 120);
 		frmErro.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmErro.getContentPane().setLayout(null);
 		
-		JLabel lblErroDeConexo = new JLabel("Erro de conex\u00E3o com o banco de dados!");
+		JLabel lblErroDeConexo = new JLabel(message);
+		lblErroDeConexo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblErroDeConexo.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblErroDeConexo.setBounds(10, 11, 253, 14);
+		lblErroDeConexo.setBounds(10, 11, 374, 27);
 		frmErro.getContentPane().add(lblErroDeConexo);
 		
 		JButton btnOk = new JButton("OK");
@@ -68,7 +50,7 @@ public class ErrorScreen {
 			}
 		});
 		btnOk.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		btnOk.setBounds(75, 36, 99, 31);
+		btnOk.setBounds(146, 49, 99, 31);
 		frmErro.getContentPane().add(btnOk);
 		
 		btnOk.addActionListener(new ActionListener() {
