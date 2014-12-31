@@ -8,22 +8,29 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufpi.exception.DatabaseConnectionException;
+import br.ufpi.exception.CommunicationErrorException;
 import br.ufpi.model.Register;
 
 public class DatabaseInteraction {
 	
 	private Connection OCSConnection;
 	private Connection myConnection;
-	private List<String> softwares;
+//	private List<String> softwares;
 	
 	public DatabaseInteraction(String OCSServerName, String OCSDatabaseName, String OCSUserName, String OCSPassword,
-			String MyServerName, String MyDatabaseName, String MyUserName, String MyPassword) throws DatabaseConnectionException {
+			String MyServerName, String MyDatabaseName, String MyUserName, String MyPassword) throws CommunicationErrorException {
 		myConnection = getMySQLConnection(MyServerName, MyDatabaseName, MyUserName, MyPassword);
 		OCSConnection = getMySQLConnection(OCSServerName, OCSDatabaseName, OCSUserName, OCSPassword);
+		try {
+			Statement st = myConnection.createStatement();
+			st.executeUpdate("create table if not exists softwares(software varchar(50) primary key);");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new CommunicationErrorException("Erro durante a criação das tabelas!");
+		}
 	}
 	
-	private Connection getMySQLConnection(String serverName, String databaseName, String userName, String password) throws DatabaseConnectionException{
+	private Connection getMySQLConnection(String serverName, String databaseName, String userName, String password) throws CommunicationErrorException{
 		Connection connection = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -35,113 +42,94 @@ public class DatabaseInteraction {
 		} catch (SQLException e) {
 			System.out.println("Não foi possível conectar ao Banco de Dados!");
 			e.printStackTrace();
-			throw new DatabaseConnectionException("Erro de conexão com o Banco de dados " + databaseName + "!");
+			throw new CommunicationErrorException("Erro de conexão com o Banco de dados " + databaseName + "!");
 		}
 	}
 	
-	public List<Register> getRegisters() throws DatabaseConnectionException{
+	public List<Register> getRegisters() throws CommunicationErrorException{
 		
+		List<String> softwares;
 		try {
 			Statement st = myConnection.createStatement();
-			st.executeUpdate("create table if not exists softwares(software varchar(50) primary key);");
 			softwares = new ArrayList<String>();
 			ResultSet rs = st.executeQuery("select * from softwares;");
 			while (rs.next()) {
 				softwares.add(rs.getString(1));
 			}
+			st.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DatabaseConnectionException("Erro de conexão com o seu Banco de Dados!");
+			throw new CommunicationErrorException("Erro de conexão com o seu Banco de Dados!");
 		}
 		
 		try {
 			Statement st = OCSConnection.createStatement();
 			List<Register> registers = new ArrayList<Register>();
 			for (int i = 0; i < softwares.size(); i++) {
-				registers = new ArrayList<Register>();
+//				registers = new ArrayList<Register>();
 				ResultSet rs = st.executeQuery("select accountinfo.HARDWARE_ID, TAG, USERID, IPADDR, softwares.NAME "
 						+ "from softwares, accountinfo, hardware "
 						+ "where softwares.HARDWARE_ID = accountinfo.HARDWARE_ID and hardware.ID = softwares.HARDWARE_ID and softwares.NAME like '%" + softwares.get(i) + "%' group by softwares.HARDWARE_ID;");
 				while (rs.next()) {
-					boolean exists = false;
-					for (int j = 0; j < registers.size(); j++) {
-						if (registers.get(j).getId() == rs.getInt(1)) {
-							registers.get(j).getSoftwares().add(rs.getString(5));
-							exists = true;
-						}
-					}
-					if (!exists) {
-						Register register = new Register(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
-						register.getSoftwares().add(rs.getString(5));
-						registers.add(register);						
-					}
+					Register register = new Register(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+					registers.add(register);						
 				}
 			}
+			//Aplicar algum algoritmo de ordenação por ID antes de retornar
+			st.close();
 			return registers;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DatabaseConnectionException("Erro de conexão com o Banco de Dados do OCS!");
+			throw new CommunicationErrorException("Erro de conexão com o Banco de Dados do OCS!");
 		}
 	}
 	
-	public void insertSoftware(String software) throws DatabaseConnectionException{
+	public List<String> getSoftwares() throws CommunicationErrorException{
 		try {
 			Statement st = myConnection.createStatement();
-			st.executeUpdate("create table if not exists softwares(software varchar(50) primary key);");
+			List<String> softwares = new ArrayList<String>();
+			ResultSet rs = st.executeQuery("select * from softwares;");
+			while (rs.next()) {
+				softwares.add(rs.getString(1));
+			}
+			st.close();
+			return softwares;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new CommunicationErrorException("Erro ao acessar a lista de softwares!");
+		}
+	}
+	
+	public void insertSoftware(String software) throws CommunicationErrorException{
+		try {
+			Statement st = myConnection.createStatement();
 			st.executeUpdate("insert into softwares values('" + software + "');");
 			st.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DatabaseConnectionException("Software já existe!");
+			throw new CommunicationErrorException("Erro ao inserir software!");
 		}
 	}
 	
-	public void saveLogin(String OCSServer, String OCSUser, String OCSPassword, String MyServer, String MyUser, String MyPassword) throws DatabaseConnectionException{
+	public void deleteSoftware(String software) throws CommunicationErrorException{
 		try {
 			Statement st = myConnection.createStatement();
-			st.executeUpdate("create table if not exists login(server varchar(50), user varchar(50), password varchar(50));");
-			st.executeUpdate("delete * from login;");
-			st.executeUpdate("insert into login values('" + OCSServer + "', '" + OCSUser +"', '" + OCSPassword + "');");
-			st.executeUpdate("insert into login values('" + MyServer + "', '" + MyUser +"', '" + MyPassword + "');");
+			st.executeUpdate("delete from softwares where software = '" + software + "';");
 			st.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DatabaseConnectionException("Erro ao salvar os dados de login!");
+			throw new CommunicationErrorException("Erro ao apagar software!");
 		}
 	}
 	
-	public String[] chargeLogin() throws DatabaseConnectionException{
-		try {
-			Statement st = myConnection.createStatement();
-			st.executeUpdate("create table if not exists login(server varchar(50), user varchar(50), password varchar(50));");
-			ResultSet rs = st.executeQuery("select * from login;");
-			int i = 0;
-			String[] loginData = new String[6];
-			while(rs.next()){
-				loginData[i] = rs.getString(1);
-				i++;
-				loginData[i] = rs.getString(2);
-				i++;
-				loginData[i] = rs.getString(3);
-				i++;
-			}
-			st.close();
-			return loginData;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseConnectionException("Erro ao carregar dados de login!");
-		}
-	}
-	
-	public void closeConnection() throws DatabaseConnectionException{
+	public void closeConnection() throws CommunicationErrorException{
 		try {
 			myConnection.close();
 			OCSConnection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DatabaseConnectionException("Erro ao fechar a conexão!");
+			throw new CommunicationErrorException("Erro ao fechar a conexão!");
 		}
 		
 	}
-	
 }

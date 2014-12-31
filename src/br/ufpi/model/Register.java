@@ -1,14 +1,12 @@
 package br.ufpi.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Register {
 	private int id;
 	private String tag;
 	private String user;
 	private String ip;
-	private List<String> softwares;
+	private String software;
 	
 	/**
 	 * @param id
@@ -17,12 +15,12 @@ public class Register {
 	 * @param ip
 	 * @param software
 	 */
-	public Register(int id, String tag, String user, String ip) {
+	public Register(int id, String tag, String user, String ip, String software) {
 		this.id = id;
 		this.tag = tag;
 		this.user = user;
 		this.ip = ip;
-		this.softwares = new ArrayList<String>();
+		this.software = software;
 	}
 
 	/**
@@ -56,8 +54,8 @@ public class Register {
 	/**
 	 * @return the software
 	 */
-	public List<String> getSoftwares() {
-		return softwares;
+	public String getSoftware() {
+		return software;
 	}
 	
 }

@@ -24,9 +24,12 @@ import javax.swing.JButton;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 import br.ufpi.dao.DatabaseInteraction;
-import br.ufpi.exception.DatabaseConnectionException;
+import br.ufpi.dao.LoginData;
+import br.ufpi.exception.CommunicationErrorException;
+import br.ufpi.model.Login;
 
 import java.awt.Component;
+import java.io.File;
 
 public class LoginScreen {
 
@@ -197,21 +200,36 @@ public class LoginScreen {
 				try {
 					DatabaseInteraction database = new DatabaseInteraction(OCSServer, "ocsweb", OCSUser, OCSPassword, MyServer, "software_detection", MyUser, MyPassword);
 					if (chckbxRememberLogin.isSelected()){
-						
+						LoginData.save(new Login(OCSServer, OCSUser, OCSPassword, MyServer, MyUser, MyPassword));
 					}
 					MainScreen main = new MainScreen(database);
 					main.getFrame().setVisible(true);
 					frmLogin.setVisible(false);
-				} catch (DatabaseConnectionException e1) {
+				} catch (CommunicationErrorException e1) {
 					ErrorScreen error = new ErrorScreen(e1.getMessage());
 					error.getFrame().setVisible(true);
 					e1.printStackTrace();
 				}
 				
-				
-				
 			}
 		});
 		
+		//se arquivo não vazio
+		try {
+			File file = new File("loginData.tmp");
+			if(file.exists()){
+				Login login;
+				login = LoginData.charge();
+				textFieldOCSServer.setText(login.getOCSServer());
+				textFieldOCSUser.setText(login.getOCSUser());
+				textFieldMyServer.setText(login.getMyServer());
+				textFieldMyUser.setText(login.getMyUser());
+				chckbxRememberLogin.setSelected(true);
+			}
+		} catch (CommunicationErrorException e1) {
+			ErrorScreen error = new ErrorScreen(e1.getMessage());
+			error.getFrame().setVisible(true);
+			e1.printStackTrace();
+		}
 	}
 }

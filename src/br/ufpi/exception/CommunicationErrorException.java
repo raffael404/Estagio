@@ -1,12 +1,12 @@
 package br.ufpi.exception;
 
-public class DatabaseConnectionException extends Exception{
+public class CommunicationErrorException extends Exception{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6907805686991333779L;
 
-	public DatabaseConnectionException(String error) {
+	public CommunicationErrorException(String error) {
 		super(error);
 	}
 }
