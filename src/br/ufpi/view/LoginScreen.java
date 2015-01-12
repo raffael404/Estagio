@@ -1,25 +1,25 @@
 package br.ufpi.view;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
-import java.awt.Font;
-
-import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
-import javax.swing.UIManager;
-
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
 
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
@@ -28,26 +28,20 @@ import br.ufpi.dao.LoginData;
 import br.ufpi.exception.CommunicationErrorException;
 import br.ufpi.model.Login;
 
-import java.awt.Component;
-import java.io.File;
-
 public class LoginScreen {
 
 	private JFrame frmLogin;
-	private JTextField textFieldOCSUser;
-	private JPasswordField passwordFieldOCSPassword;
-	private JTextField textFieldMyUser;
-	private JPasswordField passwordFieldMyPassword;
-	private JLabel lblOCSUser;
-	private JLabel lblOCSPassword;
-	private JLabel lblMyPassword;
-	private JLabel lblMyUser;
-	private JPanel panelOCSDatabase;
-	private JPanel panelMyDatabase;
-	private JLabel lblOCSServer;
-	private JTextField textFieldOCSServer;
-	private JTextField textFieldMyServer;
-	private JLabel lblMyServer;
+	
+	private JTextField textFieldServer;
+	private JTextField textFieldUser;
+	private JPasswordField passwordFieldPassword;
+	
+	private JLabel lblServer;
+	private JLabel lblUser;
+	private JLabel lblPassword;
+	
+	private JPanel panelDatabase;
+	
 	private JCheckBox chckbxRememberLogin;
 
 	/**
@@ -80,152 +74,119 @@ public class LoginScreen {
 		frmLogin = new JFrame();
 		frmLogin.setTitle("Login");
 		frmLogin.setResizable(false);
-		frmLogin.setBounds(100, 100, 430, 260);
+		frmLogin.setBounds(100, 100, 220, 235);
 		frmLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLogin.getContentPane().setLayout(null);
 		
-		passwordFieldOCSPassword = new JPasswordField();
-		passwordFieldOCSPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		passwordFieldOCSPassword.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		passwordFieldOCSPassword.setColumns(10);
-		passwordFieldOCSPassword.setBounds(91, 156, 86, 20);
-		frmLogin.getContentPane().add(passwordFieldOCSPassword);
+		panelDatabase = new JPanel();
+		panelDatabase.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Banco de Dados OCS", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelDatabase.setBounds(10, 11, 193, 125);
+		frmLogin.getContentPane().add(panelDatabase);
+		panelDatabase.setLayout(null);
 		
-		textFieldMyUser = new JTextField();
-		textFieldMyUser.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldMyUser.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		textFieldMyUser.setColumns(10);
-		textFieldMyUser.setBounds(302, 102, 86, 20);
-		frmLogin.getContentPane().add(textFieldMyUser);
+		lblServer = new JLabel("Servidor");
+		lblServer.setHorizontalAlignment(SwingConstants.CENTER);
+		lblServer.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblServer.setBounds(-1, 23, 71, 20);
+		panelDatabase.add(lblServer);
 		
-		passwordFieldMyPassword = new JPasswordField();
-		passwordFieldMyPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		passwordFieldMyPassword.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		passwordFieldMyPassword.setColumns(10);
-		passwordFieldMyPassword.setBounds(302, 156, 86, 20);
-		frmLogin.getContentPane().add(passwordFieldMyPassword);
+		textFieldServer = new JTextField();
+		textFieldServer.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldServer.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		textFieldServer.setColumns(10);
+		textFieldServer.setBounds(80, 23, 86, 20);
+		panelDatabase.add(textFieldServer);
 		
-		lblOCSUser = new JLabel("Usu\u00E1rio");
-		lblOCSUser.setHorizontalAlignment(SwingConstants.CENTER);
-		lblOCSUser.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblOCSUser.setBounds(10, 99, 71, 20);
-		frmLogin.getContentPane().add(lblOCSUser);
+		textFieldUser = new JTextField();
+		textFieldUser.setBounds(79, 54, 86, 20);
+		panelDatabase.add(textFieldUser);
+		textFieldUser.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldUser.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		textFieldUser.setColumns(10);
 		
-		lblOCSPassword = new JLabel("Senha");
-		lblOCSPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		lblOCSPassword.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblOCSPassword.setBounds(10, 155, 71, 22);
-		frmLogin.getContentPane().add(lblOCSPassword);
+		lblUser = new JLabel("Usu\u00E1rio");
+		lblUser.setBounds(-1, 54, 71, 20);
+		panelDatabase.add(lblUser);
+		lblUser.setHorizontalAlignment(SwingConstants.CENTER);
+		lblUser.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		
-		lblMyPassword = new JLabel("Senha");
-		lblMyPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMyPassword.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblMyPassword.setBounds(221, 155, 71, 22);
-		frmLogin.getContentPane().add(lblMyPassword);
+		lblPassword = new JLabel("Senha");
+		lblPassword.setBounds(-1, 85, 71, 22);
+		panelDatabase.add(lblPassword);
+		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPassword.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		
-		lblMyUser = new JLabel("Usu\u00E1rio");
-		lblMyUser.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMyUser.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblMyUser.setBounds(221, 99, 71, 20);
-		frmLogin.getContentPane().add(lblMyUser);
+		passwordFieldPassword = new JPasswordField();
+		passwordFieldPassword.setBounds(79, 85, 86, 20);
+		panelDatabase.add(passwordFieldPassword);
+		passwordFieldPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		passwordFieldPassword.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		passwordFieldPassword.setColumns(10);
 		
-		panelOCSDatabase = new JPanel();
-		panelOCSDatabase.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Banco de Dados OCS", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panelOCSDatabase.setBounds(10, 11, 193, 183);
-		frmLogin.getContentPane().add(panelOCSDatabase);
-		panelOCSDatabase.setLayout(null);
-		
-		lblOCSServer = new JLabel("Servidor");
-		lblOCSServer.setHorizontalAlignment(SwingConstants.CENTER);
-		lblOCSServer.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblOCSServer.setBounds(0, 35, 71, 20);
-		panelOCSDatabase.add(lblOCSServer);
-		
-		textFieldOCSServer = new JTextField();
-		textFieldOCSServer.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldOCSServer.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		textFieldOCSServer.setColumns(10);
-		textFieldOCSServer.setBounds(80, 35, 86, 20);
-		panelOCSDatabase.add(textFieldOCSServer);
-		
-		textFieldOCSUser = new JTextField();
-		textFieldOCSUser.setBounds(80, 88, 86, 20);
-		panelOCSDatabase.add(textFieldOCSUser);
-		textFieldOCSUser.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldOCSUser.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		textFieldOCSUser.setColumns(10);
-		
-		panelMyDatabase = new JPanel();
-		panelMyDatabase.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Meu Banco de Dados", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panelMyDatabase.setBounds(212, 11, 193, 183);
-		frmLogin.getContentPane().add(panelMyDatabase);
-		panelMyDatabase.setLayout(null);
-		
-		textFieldMyServer = new JTextField();
-		textFieldMyServer.setHorizontalAlignment(SwingConstants.CENTER);
-		textFieldMyServer.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		textFieldMyServer.setColumns(10);
-		textFieldMyServer.setBounds(90, 34, 86, 20);
-		panelMyDatabase.add(textFieldMyServer);
-		
-		lblMyServer = new JLabel("Servidor");
-		lblMyServer.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMyServer.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblMyServer.setBounds(10, 34, 71, 20);
-		panelMyDatabase.add(lblMyServer);
 		
 		chckbxRememberLogin = new JCheckBox("Lembrar dados de login");
 		chckbxRememberLogin.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		chckbxRememberLogin.setBounds(21, 201, 173, 23);
+		chckbxRememberLogin.setBounds(20, 143, 173, 23);
 		frmLogin.getContentPane().add(chckbxRememberLogin);
 		
 		JButton btnDoLogin = new JButton("Fazer login");
 		btnDoLogin.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		btnDoLogin.setBounds(246, 200, 130, 23);
+		btnDoLogin.setBounds(30, 173, 130, 23);
 		frmLogin.getContentPane().add(btnDoLogin);
-		frmLogin.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{textFieldOCSServer, textFieldOCSUser, passwordFieldOCSPassword, textFieldMyServer, textFieldMyUser, passwordFieldMyPassword, chckbxRememberLogin, btnDoLogin}));
+		
+		frmLogin.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{textFieldServer, textFieldUser, passwordFieldPassword, chckbxRememberLogin, btnDoLogin}));
+		frmLogin.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{textFieldServer, textFieldUser, passwordFieldPassword, chckbxRememberLogin, btnDoLogin}));
 		
 		btnDoLogin.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String OCSServer, OCSUser, OCSPassword, MyServer, MyUser, MyPassword;
-				OCSServer = textFieldOCSServer.getText();
-				OCSUser = textFieldOCSUser.getText();
-				OCSPassword = String.valueOf(passwordFieldOCSPassword.getPassword());
-				MyServer = textFieldMyServer.getText();
-				MyUser = textFieldMyUser.getText();
-				MyPassword = String.valueOf(passwordFieldMyPassword.getPassword());
-				
-				try {
-					DatabaseInteraction database = new DatabaseInteraction(OCSServer, "ocsweb", OCSUser, OCSPassword, MyServer, "software_detection", MyUser, MyPassword);
-					if (chckbxRememberLogin.isSelected()){
-						LoginData.save(new Login(OCSServer, OCSUser, OCSPassword, MyServer, MyUser, MyPassword));
-					}
-					MainScreen main = new MainScreen(database);
-					main.getFrame().setVisible(true);
-					frmLogin.setVisible(false);
-				} catch (CommunicationErrorException e1) {
-					ErrorScreen error = new ErrorScreen(e1.getMessage());
-					error.getFrame().setVisible(true);
-					e1.printStackTrace();
-				}
-				
+				login();
 			}
 		});
 		
-		//se arquivo não vazio
 		try {
 			File file = new File("loginData.tmp");
 			if(file.exists()){
 				Login login;
 				login = LoginData.charge();
-				textFieldOCSServer.setText(login.getOCSServer());
-				textFieldOCSUser.setText(login.getOCSUser());
-				textFieldMyServer.setText(login.getMyServer());
-				textFieldMyUser.setText(login.getMyUser());
+				textFieldServer.setText(login.getServer());
+				textFieldUser.setText(login.getUser());
 				chckbxRememberLogin.setSelected(true);
 			}
+		} catch (CommunicationErrorException e1) {
+			ErrorScreen error = new ErrorScreen(e1.getMessage());
+			error.getFrame().setVisible(true);
+			e1.printStackTrace();
+		}
+		
+		passwordFieldPassword.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if(e.getKeyChar() == '\n'){
+					login();
+				}
+			}
+			
+		});
+		
+	}
+	
+	public void login(){
+		String server, user, password;
+		server = textFieldServer.getText();
+		user = textFieldUser.getText();
+		password = String.valueOf(passwordFieldPassword.getPassword());
+		
+		try {
+			DatabaseInteraction database = new DatabaseInteraction(server, "ocsweb", user, password, server, "software_detection", user, password);
+			if (chckbxRememberLogin.isSelected()){
+				LoginData.save(new Login(server, user));
+			}
+			MainScreen main = new MainScreen(database);
+			main.getFrame().setVisible(true);
+			frmLogin.setVisible(false);
 		} catch (CommunicationErrorException e1) {
 			ErrorScreen error = new ErrorScreen(e1.getMessage());
 			error.getFrame().setVisible(true);

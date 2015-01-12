@@ -15,7 +15,6 @@ public class DatabaseInteraction {
 	
 	private Connection OCSConnection;
 	private Connection myConnection;
-//	private List<String> softwares;
 	
 	public DatabaseInteraction(String OCSServerName, String OCSDatabaseName, String OCSUserName, String OCSPassword,
 			String MyServerName, String MyDatabaseName, String MyUserName, String MyPassword) throws CommunicationErrorException {
