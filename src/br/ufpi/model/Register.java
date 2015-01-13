@@ -1,6 +1,10 @@
 package br.ufpi.model;
 
 
+/**
+ * @author Rafael
+ *
+ */
 public class Register {
 	private int id;
 	private String tag;

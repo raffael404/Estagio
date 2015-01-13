@@ -45,6 +45,9 @@ public class MainScreen {
 	/**
 	 * Create the application.
 	 */
+	/**
+	 * @param database
+	 */
 	public MainScreen(DatabaseInteraction database) {
 		this.database = database;
 		initialize();
@@ -194,7 +197,6 @@ public class MainScreen {
 					}
 				} catch (CommunicationErrorException e1) {
 					error(e1.getMessage());
-					e1.printStackTrace();
 				}
 				
 			}
@@ -208,7 +210,6 @@ public class MainScreen {
 					updateSoftwareList();
 				} catch (CommunicationErrorException e1) {
 					error(e1.getMessage());
-					e1.printStackTrace();
 				}
 			}
 		});
@@ -229,7 +230,6 @@ public class MainScreen {
 					updateSoftwareList();
 				} catch (CommunicationErrorException e1) {
 					error(e1.getMessage());
-					e1.printStackTrace();
 				}
 			}
 		});
@@ -244,7 +244,6 @@ public class MainScreen {
 					System.exit(0);
 				} catch (CommunicationErrorException e1) {
 					error(e1.getMessage());
-					e1.printStackTrace();
 				}
 			}
 		});
@@ -271,8 +270,7 @@ public class MainScreen {
 						}
 						fileWriter.close();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						error("Erro durante a criação do arquivo!");
 					}
 					
 				}
@@ -291,16 +289,23 @@ public class MainScreen {
 		
 	}
 	
+	/**
+	 * @return the frame
+	 */
 	public JFrame getFrame(){
 		return this.frmOcsSoftwareDetection;
 	}
 	
+	/**
+	 * @param message
+	 */
 	public void error(String message){
 		JOptionPane.showMessageDialog(this.frmOcsSoftwareDetection, message);
-//		ErrorScreen error = new ErrorScreen(message);
-//		error.getFrame().setVisible(true);
 	}
 	
+	/**
+	 * @throws CommunicationErrorException
+	 */
 	public void updateSoftwareList() throws CommunicationErrorException{
 		listModelSoftware.clear();
 		List<String> softwares = database.getSoftwares();
@@ -309,8 +314,11 @@ public class MainScreen {
 		}
 	}
 	
+	/**
+	 * Insert the software in the Database
+	 */
 	public void insertSoftware(){
-		if (textFieldInsertSoftware.getText() != null && textFieldInsertSoftware.getText().length() > 0) {
+		if (textFieldInsertSoftware.getText().length() > 0) {
 			try {
 				if(!database.getSoftwares().contains(textFieldInsertSoftware.getText())){
 					database.insertSoftware(textFieldInsertSoftware.getText());
@@ -319,7 +327,6 @@ public class MainScreen {
 				}else error("Software já existe!");
 			} catch (CommunicationErrorException e1) {
 				error(e1.getMessage());
-				e1.printStackTrace();
 			}
 		}else error("Campo vazio!");
 	}

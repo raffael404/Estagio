@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -53,6 +54,8 @@ public class LoginScreen {
 				try {
 					LoginScreen window = new LoginScreen();
 					window.frmLogin.setVisible(true);
+					if (window.chckbxRememberLogin.isSelected())
+						window.passwordFieldPassword.requestFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -131,7 +134,7 @@ public class LoginScreen {
 		
 		JButton btnDoLogin = new JButton("Fazer login");
 		btnDoLogin.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		btnDoLogin.setBounds(30, 173, 130, 23);
+		btnDoLogin.setBounds(40, 173, 130, 23);
 		frmLogin.getContentPane().add(btnDoLogin);
 		
 		frmLogin.getContentPane().setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{textFieldServer, textFieldUser, passwordFieldPassword, chckbxRememberLogin, btnDoLogin}));
@@ -145,20 +148,6 @@ public class LoginScreen {
 			}
 		});
 		
-		try {
-			File file = new File("loginData.tmp");
-			if(file.exists()){
-				Login login;
-				login = LoginData.charge();
-				textFieldServer.setText(login.getServer());
-				textFieldUser.setText(login.getUser());
-				chckbxRememberLogin.setSelected(true);
-			}
-		} catch (CommunicationErrorException e1) {
-			ErrorScreen error = new ErrorScreen(e1.getMessage());
-			error.getFrame().setVisible(true);
-			e1.printStackTrace();
-		}
 		
 		passwordFieldPassword.addKeyListener(new KeyAdapter() {
 			
@@ -171,8 +160,24 @@ public class LoginScreen {
 			
 		});
 		
+		try {
+			File file = new File("loginData.tmp");
+			if(file.exists()){
+				Login login;
+				login = LoginData.charge();
+				textFieldServer.setText(login.getServer());
+				textFieldUser.setText(login.getUser());
+				chckbxRememberLogin.setSelected(true);
+			}
+		} catch (CommunicationErrorException e1) {
+			JOptionPane.showMessageDialog(this.frmLogin, e1.getMessage());
+		}
+		
 	}
 	
+	/**
+	 * Performs the authentication
+	 */
 	public void login(){
 		String server, user, password;
 		server = textFieldServer.getText();
@@ -188,9 +193,7 @@ public class LoginScreen {
 			main.getFrame().setVisible(true);
 			frmLogin.setVisible(false);
 		} catch (CommunicationErrorException e1) {
-			ErrorScreen error = new ErrorScreen(e1.getMessage());
-			error.getFrame().setVisible(true);
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(this.frmLogin, e1.getMessage());			
 		}
 	}
 }

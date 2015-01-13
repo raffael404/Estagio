@@ -9,23 +9,35 @@ import java.util.Scanner;
 import br.ufpi.exception.CommunicationErrorException;
 import br.ufpi.model.Login;
 
+/**
+ * @author Rafael
+ *
+ */
 public class LoginData {
 	
+	/**
+	 * @param login
+	 * @throws CommunicationErrorException
+	 */
 	public static void save(Login login) throws CommunicationErrorException{
 		try {
 			BufferedWriter outFile = new BufferedWriter(new FileWriter("loginData.tmp"));
 			outFile.write(login.getServer() + ";" + login.getUser() + ";");
 			outFile.close();
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro ao salvar dados de login!");
 		}
 	}
 	
+	/**
+	 * @return the login
+	 * @throws CommunicationErrorException
+	 */
 	public static Login charge() throws CommunicationErrorException{
 		try {
 			FileReader fr = new FileReader("loginData.tmp");
-			Scanner scanner = new Scanner(fr).useDelimiter(";");
+			Scanner scanner = new Scanner(fr);
+			scanner.useDelimiter(";");
 			String loginTmp[] = new String[2];
 			int i = 0;
 			while (scanner.hasNext()) {
@@ -37,7 +49,6 @@ public class LoginData {
 			scanner.close();
 			return login;
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro ao carregar dados de login!");
 		}
 	}

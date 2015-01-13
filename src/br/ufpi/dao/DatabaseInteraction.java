@@ -10,6 +10,7 @@ import java.util.List;
 
 import br.ufpi.exception.CommunicationErrorException;
 import br.ufpi.model.Register;
+import br.ufpi.util.SortRegisters;
 
 public class DatabaseInteraction {
 	
@@ -24,7 +25,6 @@ public class DatabaseInteraction {
 			Statement st = myConnection.createStatement();
 			st.executeUpdate("create table if not exists softwares(software varchar(50) primary key);");
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro durante a criação das tabelas!");
 		}
 	}
@@ -36,11 +36,8 @@ public class DatabaseInteraction {
 			connection = DriverManager.getConnection("jdbc:mysql://" + serverName + "/" + databaseName, userName, password);
 			return connection;
 		} catch (ClassNotFoundException e) {
-			System.out.println("Driver não encontrado!");
-			return null;
+			throw new CommunicationErrorException("Driver não encontrado!");
 		} catch (SQLException e) {
-			System.out.println("Não foi possível conectar ao Banco de Dados!");
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro de conexão com o Banco de dados " + databaseName + "!");
 		}
 	}
@@ -57,7 +54,6 @@ public class DatabaseInteraction {
 			}
 			st.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro de conexão com o seu Banco de Dados!");
 		}
 		
@@ -74,11 +70,10 @@ public class DatabaseInteraction {
 					registers.add(register);						
 				}
 			}
-			//Aplicar algum algoritmo de ordenação por ID antes de retornar
 			st.close();
+			SortRegisters.quickSort(registers, 0, registers.size()-1);
 			return registers;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro de conexão com o Banco de Dados do OCS!");
 		}
 	}
@@ -94,7 +89,6 @@ public class DatabaseInteraction {
 			st.close();
 			return softwares;
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro ao acessar a lista de softwares!");
 		}
 	}
@@ -105,7 +99,6 @@ public class DatabaseInteraction {
 			st.executeUpdate("insert into softwares values('" + software + "');");
 			st.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro ao inserir software!");
 		}
 	}
@@ -116,7 +109,6 @@ public class DatabaseInteraction {
 			st.executeUpdate("delete from softwares where software = '" + software + "';");
 			st.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro ao apagar software!");
 		}
 	}
@@ -126,7 +118,6 @@ public class DatabaseInteraction {
 			myConnection.close();
 			OCSConnection.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new CommunicationErrorException("Erro ao fechar a conexão!");
 		}
 		

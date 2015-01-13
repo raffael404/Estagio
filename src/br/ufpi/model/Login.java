@@ -1,5 +1,9 @@
 package br.ufpi.model;
 
+/**
+ * @author Rafael
+ *
+ */
 public class Login {
 	private String server, user;
 
