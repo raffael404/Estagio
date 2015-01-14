@@ -28,6 +28,7 @@ import br.ufpi.dao.DatabaseInteraction;
 import br.ufpi.dao.LoginData;
 import br.ufpi.exception.CommunicationErrorException;
 import br.ufpi.model.Login;
+import java.awt.Toolkit;
 
 public class LoginScreen {
 
@@ -75,6 +76,7 @@ public class LoginScreen {
 	 */
 	private void initialize() {
 		frmLogin = new JFrame();
+		frmLogin.setIconImage(Toolkit.getDefaultToolkit().getImage(LoginScreen.class.getResource("/br/ufpi/image/piracy.png")));
 		frmLogin.setTitle("Login");
 		frmLogin.setResizable(false);
 		frmLogin.setBounds(100, 100, 220, 235);

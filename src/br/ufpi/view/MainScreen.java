@@ -30,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import br.ufpi.dao.DatabaseInteraction;
 import br.ufpi.exception.CommunicationErrorException;
 import br.ufpi.model.Register;
+import java.awt.Toolkit;
 
 public class MainScreen {
 
@@ -58,6 +59,7 @@ public class MainScreen {
 	 */
 	private void initialize() {
 		frmOcsSoftwareDetection = new JFrame();
+		frmOcsSoftwareDetection.setIconImage(Toolkit.getDefaultToolkit().getImage(MainScreen.class.getResource("/br/ufpi/image/piracy.png")));
 		frmOcsSoftwareDetection.setTitle("OCS Software Detection");
 		frmOcsSoftwareDetection.setBounds(100, 100, 500, 400);
 		frmOcsSoftwareDetection.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
